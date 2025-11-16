@@ -1,0 +1,8 @@
+node_modules
+dist
+build
+.vscode
+*.log
+.env
+.env.local
+coverage
