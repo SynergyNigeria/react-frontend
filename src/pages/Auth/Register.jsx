@@ -69,13 +69,82 @@ const Register = () => {
     setStep(step - 1);
   };
 
+  // State mapping for backend
+  const stateMapping = {
+    'Abia': 'abia',
+    'Adamawa': 'adamawa',
+    'Akwa Ibom': 'akwa_ibom',
+    'Anambra': 'anambra',
+    'Bauchi': 'bauchi',
+    'Bayelsa': 'bayelsa',
+    'Benue': 'benue',
+    'Borno': 'borno',
+    'Cross River': 'cross_river',
+    'Delta': 'delta',
+    'Ebonyi': 'ebonyi',
+    'Edo': 'edo',
+    'Ekiti': 'ekiti',
+    'Enugu': 'enugu',
+    'FCT': 'fct',
+    'Gombe': 'gombe',
+    'Imo': 'imo',
+    'Jigawa': 'jigawa',
+    'Kaduna': 'kaduna',
+    'Kano': 'kano',
+    'Katsina': 'katsina',
+    'Kebbi': 'kebbi',
+    'Kogi': 'kogi',
+    'Kwara': 'kwara',
+    'Lagos': 'lagos',
+    'Nasarawa': 'nasarawa',
+    'Niger': 'niger',
+    'Ogun': 'ogun',
+    'Ondo': 'ondo',
+    'Osun': 'osun',
+    'Oyo': 'oyo',
+    'Plateau': 'plateau',
+    'Rivers': 'rivers',
+    'Sokoto': 'sokoto',
+    'Taraba': 'taraba',
+    'Yobe': 'yobe',
+    'Zamfara': 'zamfara',
+  };
+
+  // Phone normalization
+  const normalizePhone = (phone) => {
+    let normalizedPhone = phone.trim();
+    if (normalizedPhone.startsWith('+234')) {
+      normalizedPhone = '0' + normalizedPhone.substring(4);
+    } else if (normalizedPhone.startsWith('234')) {
+      normalizedPhone = '0' + normalizedPhone.substring(3);
+    }
+    return normalizedPhone;
+  };
+
   const onSubmit = async (data) => {
     try {
       setError('');
-      await registerUser(data);
+      // Build payload for API
+      const payload = {
+        full_name: data.full_name,
+        email: data.email.toLowerCase(),
+        phone_number: normalizePhone(data.phone),
+        state: stateMapping[data.state] || data.state.toLowerCase().replace(/ /g, '_'),
+        city: data.lga,
+        password: data.password,
+        password_confirm: data.confirm_password,
+      };
+      await registerUser(payload);
       toast.success('Registration successful!');
     } catch (err) {
-      setError(err.response?.data?.message || 'Registration failed. Please try again.');
+      // Show field-specific errors if available
+      const apiErrors = err.response?.data;
+      if (apiErrors && typeof apiErrors === 'object') {
+        const messages = Object.values(apiErrors).flat().join(' ');
+        setError(messages);
+      } else {
+        setError(err.response?.data?.message || 'Registration failed. Please try again.');
+      }
       toast.error('Registration failed');
     }
   };
