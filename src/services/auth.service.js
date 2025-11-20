@@ -53,8 +53,10 @@ export const authService = {
   },
 
   // Become seller
-  becomeSeller: async (storeData) => {
-    const response = await api.post(ENDPOINTS.BECOME_SELLER, storeData);
+  becomeSeller: async (storeData = {}) => {
+    console.log('Calling become seller API with data:', storeData);
+    const response = await api.post(ENDPOINTS.BECOME_SELLER);
+    console.log('Become seller response:', response.data);
     tokenManager.setCurrentUser(response.data.user);
     return response.data;
   },

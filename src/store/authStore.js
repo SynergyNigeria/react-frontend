@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { authService } from '@services/auth.service';
 import { tokenManager } from '@services/api';
 
-export const useAuthStore = create((set, get) => ({
+export const useAuthStore = create((set) => ({
   user: tokenManager.getCurrentUser(),
   isAuthenticated: authService.isAuthenticated(),
   isLoading: false,
@@ -86,8 +86,21 @@ export const useAuthStore = create((set, get) => ({
     }
   },
 
-  // Clear error
-  clearError: () => set({ error: null }),
+  // Become seller action
+  becomeSeller: async (storeData) => {
+    set({ isLoading: true, error: null });
+    try {
+      const data = await authService.becomeSeller(storeData);
+      set({ user: data.user, isLoading: false });
+      return data;
+    } catch (error) {
+      set({
+        error: error.response?.data?.message || 'Become seller failed',
+        isLoading: false,
+      });
+      throw error;
+    }
+  },
 }));
 
 export default useAuthStore;

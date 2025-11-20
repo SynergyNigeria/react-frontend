@@ -18,6 +18,7 @@ export const ENDPOINTS = {
 
   // Stores
   STORES: '/stores/',
+  MY_STORES: '/stores/my_stores/',
   STORE_DETAIL: (id) => `/stores/${id}/`,
   STORE_PRODUCTS: (id) => `/stores/${id}/products/`,
   RATE_STORE: (id) => `/stores/${id}/rate/`,
@@ -34,12 +35,15 @@ export const ENDPOINTS = {
   DELIVER_ORDER: (id) => `/orders/${id}/deliver/`,
   CONFIRM_ORDER: (id) => `/orders/${id}/confirm/`,
   CANCEL_ORDER: (id) => `/orders/${id}/cancel/`,
+  ORDERS_STATS: '/orders/stats/',
 
   // Wallet
   FUND_WALLET: '/wallet/fund/',
   VERIFY_PAYMENT: '/wallet/verify-payment/',
   TRANSACTIONS: '/wallet/transactions/',
   WITHDRAW: '/wallet/withdraw/',
+  WALLET_BALANCE: '/wallet/',
+  BANK_ACCOUNTS: '/wallet/bank-accounts/',
 
   // Ratings and Reviews
   RATINGS: '/ratings/',

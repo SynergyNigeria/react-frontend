@@ -17,6 +17,8 @@ import Cart from './pages/Product/Cart';
 import Orders from './pages/Order/Orders';
 import Profile from './pages/Profile/Profile';
 import Purchase from './pages/Order/Purchase';
+import StoreManagement from './pages/Seller/StoreManagement';
+import ErrorBoundary from './components/common/ErrorBoundary';
 
 // Create QueryClient
 const queryClient = new QueryClient({
@@ -89,6 +91,18 @@ function App() {
             element={
               <ProtectedRoute>
                 <Purchase />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Store Management - No Layout (full page design) */}
+          <Route
+            path="/seller/store"
+            element={
+              <ProtectedRoute>
+                <ErrorBoundary>
+                  <StoreManagement />
+                </ErrorBoundary>
               </ProtectedRoute>
             }
           />
