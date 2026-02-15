@@ -913,13 +913,22 @@ const StoreManagement = () => {
               required
             />
           </div>
-          <Input
-            label="Category"
-            value={storeDetails.category}
-            onChange={(e) => setStoreDetails(prev => ({ ...prev, category: e.target.value }))}
-            placeholder="Fashion, Electronics, etc."
-            required
-          />
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
+            <select
+              value={storeDetails.category}
+              onChange={(e) => setStoreDetails(prev => ({ ...prev, category: e.target.value }))}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-sm sm:text-base bg-white text-gray-900"
+              required
+            >
+              <option value="">Select a category</option>
+              {CATEGORIES.filter(cat => cat.id !== 'all').map(category => (
+                <option key={category.id} value={category.id}>
+                  {category.name}
+                </option>
+              ))}
+            </select>
+          </div>
           <div className="flex flex-col sm:flex-row gap-3 pt-4">
             <Button type="button" variant="outline" onClick={() => setShowStoreModal(false)} className="flex-1 order-2 sm:order-1">
               Cancel
