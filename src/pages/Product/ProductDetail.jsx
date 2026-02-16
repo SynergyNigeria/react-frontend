@@ -4,7 +4,7 @@ import {
   useProduct,
   useRelatedProducts,
   useProductReviews,
-  useProductRatingStats,
+  // useProductRatingStats, // Temporarily disabled - endpoint not available
 } from '@hooks/useAPI';
 import Spinner from '@components/common/Spinner';
 import Button from '@components/common/Button';
@@ -28,7 +28,7 @@ const ProductDetail = () => {
   const navigate = useNavigate();
   const { data: product, isLoading, error } = useProduct(productId);
   const { data: relatedProducts } = useRelatedProducts(product?.category, productId);
-  const { data: ratingStats, error: ratingStatsError } = useProductRatingStats(productId);
+  // const { data: ratingStats, error: ratingStatsError } = useProductRatingStats(productId); // Disabled - endpoint not available
   const {
     data: reviewsData,
     fetchNextPage,
@@ -353,7 +353,7 @@ const ProductDetail = () => {
         )}
 
         {/* Reviews Section - Enhanced Design */}
-        {(reviews.length > 0 || (ratingStats && !ratingStatsError)) && (
+        {reviews.length > 0 && (
           <div className="bg-white rounded-3xl shadow-xl border border-gray-100 p-8 mb-12">
             <div className="flex items-center gap-3 mb-8">
               <div className="bg-nigerian-green/10 rounded-full p-3">
@@ -362,8 +362,8 @@ const ProductDetail = () => {
               <h2 className="text-2xl font-bold text-gray-900">Customer Reviews</h2>
             </div>
 
-            {/* Rating Stats - Modern Card */}
-            {ratingStats && (
+            {/* Rating Stats - Temporarily disabled - endpoint not available */}
+            {/* {ratingStats && (
               <div className="bg-gradient-to-r from-gray-50 to-gray-100 rounded-2xl p-6 border border-gray-200 mb-8">
                 <div className="flex flex-col lg:flex-row items-center gap-6">
                   <div className="text-center lg:text-left">
@@ -378,7 +378,6 @@ const ProductDetail = () => {
                     </div>
                   </div>
 
-                  {/* Rating Distribution - Enhanced */}
                   <div className="flex-1 w-full lg:w-auto">
                     {[5, 4, 3, 2, 1].map((star) => {
                       const count = ratingStats.rating_distribution[star.toString()] || 0;
@@ -404,97 +403,67 @@ const ProductDetail = () => {
                   </div>
                 </div>
               </div>
-            )}
+            )} */}
 
             {/* Individual Reviews - Modern Cards */}
-            {reviews.length > 0 ? (
-              <div className="space-y-6">
-                {reviews.map((review) => (
-                  <div
-                    key={review.id}
-                    className="bg-gray-50 rounded-2xl p-6 border border-gray-200 hover:shadow-md transition-shadow duration-200"
-                  >
-                    <div className="flex items-start justify-between mb-4">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center text-white font-bold">
-                          {(
-                            review.buyer_name ||
+            <div className="space-y-6">
+              {reviews.map((review) => (
+                <div
+                  key={review.id}
+                  className="bg-gray-50 rounded-2xl p-6 border border-gray-200 hover:shadow-md transition-shadow duration-200"
+                >
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center text-white font-bold">
+                        {(
+                          review.buyer_name ||
+                          review.user_name ||
+                          review.customer_name ||
+                          'Anonymous'
+                        ).charAt(0)}
+                      </div>
+                      <div>
+                        <span className="font-bold text-gray-900">
+                          {review.buyer_name ||
                             review.user_name ||
                             review.customer_name ||
-                            'Anonymous'
-                          ).charAt(0)}
-                        </div>
-                        <div>
-                          <span className="font-bold text-gray-900">
-                            {review.buyer_name ||
-                              review.user_name ||
-                              review.customer_name ||
-                              'Anonymous'}
+                            'Anonymous'}
+                        </span>
+                        <div className="flex items-center gap-2 mt-1">
+                          <Rating value={review.rating} size="sm" />
+                          <span className="text-sm text-gray-500">
+                            {new Date(review.created_at).toLocaleDateString('en-US', {
+                              year: 'numeric',
+                              month: 'short',
+                              day: 'numeric',
+                            })}
                           </span>
-                          <div className="flex items-center gap-1 mt-1">
-                            {[1, 2, 3, 4, 5].map((star) => (
-                              <span
-                                key={star}
-                                className={`text-sm ${
-                                  star <= review.rating ? 'text-yellow-400' : 'text-gray-300'
-                                }`}
-                              >
-                                ★
-                              </span>
-                            ))}
-                          </div>
                         </div>
                       </div>
-                      <span className="text-sm text-gray-500 font-medium">
-                        {new Date(review.created_at).toLocaleDateString('en-US', {
-                          year: 'numeric',
-                          month: 'short',
-                          day: 'numeric',
-                        })}
-                      </span>
-                    </div>
-                    {review.review && (
-                      <p className="text-gray-700 leading-relaxed bg-white rounded-xl p-4 border border-gray-200">
-                        {review.review}
-                      </p>
-                    )}
-                  </div>
-                ))}
-
-                {/* Load More Button - Enhanced */}
-                {hasNextPage && (
-                  <div className="text-center mt-8">
-                    <Button
-                      onClick={() => fetchNextPage()}
-                      variant="outline"
-                      className="bg-white hover:bg-gray-50 text-gray-700 border-gray-300 hover:border-primary hover:text-primary px-8 py-3 rounded-2xl font-semibold transition-all duration-200"
-                      loading={reviewsLoading}
-                    >
-                      Load More Reviews
-                    </Button>
-                  </div>
-                )}
-              </div>
-            ) : (
-              !reviewsLoading && (
-                <div className="text-center py-12 bg-gray-50 rounded-2xl border-2 border-dashed border-gray-300">
-                  <div className="text-6xl mb-4">💬</div>
-                  <h3 className="text-xl font-bold text-gray-900 mb-2">No Reviews Yet</h3>
-                  <p className="text-gray-600 mb-4">
-                    Be the first to share your experience with this product!
-                  </p>
-                  <div className="flex justify-center">
-                    <div className="flex text-yellow-400">
-                      {[1, 2, 3, 4, 5].map((star) => (
-                        <span key={star} className="text-2xl">
-                          ☆
-                        </span>
-                      ))}
                     </div>
                   </div>
+                  {review.review && (
+                    <p className="text-gray-700 leading-relaxed bg-white rounded-xl p-4 border border-gray-200">
+                      {review.review}
+                    </p>
+                  )}
                 </div>
-              )
-            )}
+              ))}
+
+              {/* Load More Button - Enhanced */}
+              {hasNextPage && (
+                <div className="text-center mt-8">
+                  <Button
+                    onClick={() => fetchNextPage()}
+                    variant="outline"
+                    className="bg-white hover:bg-gray-50 text-gray-700 border-gray-300 hover:border-primary hover:text-primary px-8 py-3 rounded-2xl font-semibold transition-all duration-200"
+                    loading={reviewsLoading}
+                  >
+                    Load More Reviews
+                  </Button>
+                </div>
+              )}
+            </div>
           </div>
         )}
 

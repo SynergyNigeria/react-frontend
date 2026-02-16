@@ -80,13 +80,13 @@ export const useRateProduct = () => {
 };
 
 // Product reviews and rating stats hooks
-export const useProductRatingStats = (productId) => {
-  return useQuery({
-    queryKey: ['product-rating-stats', productId],
-    queryFn: () => productService.getProductRatingStats(productId),
-    enabled: !!productId,
-  });
-};
+// export const useProductRatingStats = (productId) => { // Temporarily disabled - endpoint not available
+//   return useQuery({
+//     queryKey: ['product-rating-stats', productId],
+//     queryFn: () => productService.getProductRatingStats(productId),
+//     enabled: !!productId,
+//   });
+// };
 
 export const useProductReviews = (productId) => {
   return useInfiniteQuery({
@@ -250,7 +250,7 @@ export default {
   useProducts,
   useProduct,
   useRateProduct,
-  useProductRatingStats,
+  // useProductRatingStats, // Temporarily disabled - endpoint not available
   useProductReviews,
   useOrders,
   useSellerOrders,

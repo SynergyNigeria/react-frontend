@@ -41,10 +41,10 @@ export const productService = {
   },
 
   // Get product rating statistics
-  getProductRatingStats: async (productId) => {
-    const response = await api.get(ENDPOINTS.PRODUCT_RATING_STATS(productId));
-    return response.data;
-  },
+  // getProductRatingStats: async (productId) => { // Temporarily disabled - endpoint not available
+  //   const response = await api.get(ENDPOINTS.PRODUCT_RATING_STATS(productId));
+  //   return response.data;
+  // },
 
   // Get product reviews
   getProductReviews: async (productId, page = 1, pageSize = 10) => {

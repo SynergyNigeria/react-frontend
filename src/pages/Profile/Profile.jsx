@@ -1,9 +1,11 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '@hooks/useAuth';
 import { useFundWallet } from '@hooks/useAPI';
 import Card from '@components/common/Card';
 import Button from '@components/common/Button';
 import Modal from '@components/common/Modal';
+import { api } from '@services/api';
+import { ENDPOINTS } from '@config/apiConfig';
 import { User, Mail, Phone, MapPin, LogOut, Wallet } from 'lucide-react';
 import toast from 'react-hot-toast';
 
@@ -11,7 +13,25 @@ const Profile = () => {
   const { user, logout } = useAuth();
   const [isTopUpModalOpen, setIsTopUpModalOpen] = useState(false);
   const [topUpAmount, setTopUpAmount] = useState('');
+  const [walletBalance, setWalletBalance] = useState(0);
   const walletFundMutation = useFundWallet();
+
+  // Fetch wallet balance on component mount
+  useEffect(() => {
+    const loadWalletBalance = async () => {
+      try {
+        const walletResponse = await api.get(ENDPOINTS.WALLET_BALANCE);
+        setWalletBalance(walletResponse.data.balance || 0);
+      } catch (err) {
+        console.error('Error loading wallet balance:', err);
+        setWalletBalance(0);
+      }
+    };
+
+    if (user) {
+      loadWalletBalance();
+    }
+  }, [user]);
 
   // Handle top-up wallet
   const handleTopUp = async () => {
@@ -24,6 +44,9 @@ const Profile = () => {
     try {
       const response = await walletFundMutation.mutateAsync({ amount });
       if (response.status === 'success') {
+        // Refresh wallet balance
+        const walletResponse = await api.get(ENDPOINTS.WALLET_BALANCE);
+        setWalletBalance(walletResponse.data.balance || 0);
         // Redirect to Paystack payment page
         window.location.href = response.data.authorization_url;
       }
@@ -99,26 +122,24 @@ const Profile = () => {
           </Card>
 
           {/* Wallet */}
-          {user.wallet_balance !== undefined && (
-            <Card>
-              <div className="p-6">
-                <h2 className="text-xl font-bold text-gray-900 mb-4">Wallet</h2>
-                <div className="flex justify-between items-center mb-4">
-                  <span className="text-gray-600">Balance</span>
-                  <span className="text-2xl font-bold text-primary-600">
-                    ₦{user.wallet_balance.toLocaleString()}
-                  </span>
-                </div>
-                <Button 
-                  variant="primary" 
-                  className="w-full sm:w-auto"
-                  onClick={() => setIsTopUpModalOpen(true)}
-                >
-                  Fund Wallet
-                </Button>
+          <Card>
+            <div className="p-6">
+              <h2 className="text-xl font-bold text-gray-900 mb-4">Wallet</h2>
+              <div className="flex justify-between items-center mb-4">
+                <span className="text-gray-600">Balance</span>
+                <span className="text-2xl font-bold text-primary-600">
+                  ₦{walletBalance.toLocaleString()}
+                </span>
               </div>
-            </Card>
-          )}
+              <Button 
+                variant="primary" 
+                className="w-full sm:w-auto"
+                onClick={() => setIsTopUpModalOpen(true)}
+              >
+                Fund Wallet
+              </Button>
+            </div>
+          </Card>
 
           {/* Account Actions */}
           <Card>
