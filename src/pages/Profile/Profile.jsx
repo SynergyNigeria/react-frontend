@@ -1,10 +1,37 @@
+import { useState } from 'react';
 import { useAuth } from '@hooks/useAuth';
+import { useFundWallet } from '@hooks/useAPI';
 import Card from '@components/common/Card';
 import Button from '@components/common/Button';
-import { User, Mail, Phone, MapPin, LogOut } from 'lucide-react';
+import Modal from '@components/common/Modal';
+import { User, Mail, Phone, MapPin, LogOut, Wallet } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 const Profile = () => {
   const { user, logout } = useAuth();
+  const [isTopUpModalOpen, setIsTopUpModalOpen] = useState(false);
+  const [topUpAmount, setTopUpAmount] = useState('');
+  const walletFundMutation = useFundWallet();
+
+  // Handle top-up wallet
+  const handleTopUp = async () => {
+    const amount = parseFloat(topUpAmount);
+    if (!amount || amount < 100 || amount > 100000) {
+      toast.error('Please enter a valid amount between ₦100 and ₦100,000');
+      return;
+    }
+
+    try {
+      const response = await walletFundMutation.mutateAsync({ amount });
+      if (response.status === 'success') {
+        // Redirect to Paystack payment page
+        window.location.href = response.data.authorization_url;
+      }
+    } catch (err) {
+      console.error('Top-up error:', err);
+      toast.error('Failed to initiate payment. Please try again.');
+    }
+  };
 
   if (!user) {
     return null;
@@ -82,7 +109,11 @@ const Profile = () => {
                     ₦{user.wallet_balance.toLocaleString()}
                   </span>
                 </div>
-                <Button variant="primary" className="w-full sm:w-auto">
+                <Button 
+                  variant="primary" 
+                  className="w-full sm:w-auto"
+                  onClick={() => setIsTopUpModalOpen(true)}
+                >
                   Fund Wallet
                 </Button>
               </div>
@@ -117,6 +148,58 @@ const Profile = () => {
           </Card>
         </div>
       </div>
+
+      {/* Top-Up Modal */}
+      <Modal
+        isOpen={isTopUpModalOpen}
+        onClose={() => setIsTopUpModalOpen(false)}
+        title="Top Up Your Wallet"
+        size="md"
+      >
+        <div className="space-y-6">
+          <div className="text-center">
+            <div className="w-16 h-16 bg-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Wallet className="h-8 w-8 text-white" />
+            </div>
+            <h3 className="text-lg font-bold text-gray-900 mb-2">Add Funds to Wallet</h3>
+            <p className="text-gray-600">Secure payment powered by Paystack</p>
+          </div>
+
+          <div>
+            <label htmlFor="topUpAmount" className="block text-sm font-semibold text-gray-700 mb-3">
+              Amount (₦)
+            </label>
+            <input
+              type="number"
+              id="topUpAmount"
+              value={topUpAmount}
+              onChange={(e) => setTopUpAmount(e.target.value)}
+              min="100"
+              max="100000"
+              step="100"
+              placeholder="5000"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary text-center text-lg font-semibold bg-white text-gray-900"
+            />
+            <p className="text-xs text-gray-500 mt-2 text-center">
+              Minimum ₦100 • Maximum ₦100,000
+            </p>
+          </div>
+
+          <div className="flex gap-3">
+            <Button onClick={() => setIsTopUpModalOpen(false)} variant="outline" className="flex-1">
+              Cancel
+            </Button>
+            <Button
+              onClick={handleTopUp}
+              disabled={walletFundMutation.isLoading}
+              loading={walletFundMutation.isLoading}
+              className="flex-1 bg-green-600 hover:bg-green-700"
+            >
+              Add Funds
+            </Button>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 };

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   useOrders,
@@ -14,6 +14,8 @@ import Card from '@components/common/Card';
 import Spinner from '@components/common/Spinner';
 import Button from '@components/common/Button';
 import Modal from '@components/common/Modal';
+import RatingModal from '@components/common/RatingModal';
+import { api } from '@services/api';
 import { formatCurrency, formatDate, formatDateTime, getOrderStatusColor } from '@utils/formatters';
 import {
   ArrowLeft,
@@ -43,6 +45,9 @@ const Orders = () => {
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [confirmAction, setConfirmAction] = useState(null);
   const [cancelReason, setCancelReason] = useState('');
+  const [showRatingModal, setShowRatingModal] = useState(false);
+  const [ratingOrderId, setRatingOrderId] = useState(null);
+  const [ratingStoreName, setRatingStoreName] = useState('');
 
   // API hooks
   const { data: profile } = useProfile();
@@ -74,6 +79,29 @@ const Orders = () => {
 
   // Check if user is a seller
   const isSeller = profile?.is_seller || false;
+
+  // Check for pending ratings on mount
+  useEffect(() => {
+    const pendingOrderId = localStorage.getItem('pendingRatingOrderId');
+    if (pendingOrderId) {
+      // Delay popup slightly for better UX
+      setTimeout(() => {
+        setRatingOrderId(pendingOrderId);
+        // Fetch order details to get store name
+        api.get(`/orders/${pendingOrderId}/`)
+          .then(response => {
+            const storeName = response.data?.product?.store_name || response.data?.store_name || '';
+            setRatingStoreName(storeName);
+            setShowRatingModal(true);
+          })
+          .catch(error => {
+            console.error('Error fetching order for rating:', error);
+            // Show modal anyway
+            setShowRatingModal(true);
+          });
+      }, 800);
+    }
+  }, []);
 
   // Status options
   const statuses = [
@@ -113,6 +141,17 @@ const Orders = () => {
           break;
         case 'confirm':
           await confirmOrderMutation.mutateAsync(orderId);
+          // Set pending rating flag for popup
+          localStorage.setItem('pendingRatingOrderId', orderId);
+          // Trigger rating modal immediately
+          setTimeout(() => {
+            setRatingOrderId(orderId);
+            // Get store name from selected order
+            const confirmedOrder = currentOrders.find(o => o.id === orderId);
+            const storeName = confirmedOrder?.product?.store_name || confirmedOrder?.store_name || '';
+            setRatingStoreName(storeName);
+            setShowRatingModal(true);
+          }, 800);
           break;
         case 'cancel':
           await cancelOrderMutation.mutateAsync({
@@ -851,6 +890,14 @@ const Orders = () => {
           </div>
         </div>
       </Modal>
+
+      {/* Rating Modal */}
+      <RatingModal
+        isOpen={showRatingModal}
+        onClose={() => setShowRatingModal(false)}
+        orderId={ratingOrderId}
+        storeName={ratingStoreName}
+      />
     </div>
   );
 };

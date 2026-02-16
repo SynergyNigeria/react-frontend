@@ -192,7 +192,7 @@ export const useFundWallet = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (amount) => walletService.fundWallet(amount),
+    mutationFn: ({ amount }) => walletService.fundWallet(amount),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['wallet-balance'] });
       queryClient.invalidateQueries({ queryKey: ['transactions'] });
