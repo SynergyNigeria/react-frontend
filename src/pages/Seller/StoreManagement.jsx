@@ -312,7 +312,7 @@ const StoreManagement = () => {
       }
 
       if (editingProduct) {
-        await productService.updateProduct(editingProduct.id, formData);
+        await productService.updateProduct(editingProduct.id, formData, store?.id);
         toast.success('Product updated successfully');
       } else {
         await productService.createProduct(formData);
@@ -365,7 +365,7 @@ const StoreManagement = () => {
 
   const handleDeleteProduct = async (productId) => {
     try {
-      await productService.deleteProduct(productId);
+      await productService.deleteProduct(productId, store?.id);
       toast.success('Product deleted successfully');
       loadProducts();
       loadStoreData(); // Refresh stats
@@ -443,7 +443,7 @@ const StoreManagement = () => {
 
   const handleDeleteProductDetail = async () => {
     try {
-      await productService.deleteProduct(selectedProduct.id);
+      await productService.deleteProduct(selectedProduct.id, store?.id);
       toast.success('Product deleted successfully');
 
       setShowProductDetailModal(false);

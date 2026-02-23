@@ -21,6 +21,7 @@ export const ENDPOINTS = {
   MY_STORES: '/stores/my_stores/',
   STORE_DETAIL: (id) => `/stores/${id}/`,
   STORE_PRODUCTS: (id) => `/stores/${id}/products/`,
+  STORE_PRODUCT_DETAIL: (storeId, productId) => `/stores/${storeId}/products/${productId}/`,
   RATE_STORE: (id) => `/stores/${id}/rate/`,
 
   // Products

@@ -36,7 +36,7 @@ const ShopCard = ({ shop }) => {
         <div className="flex items-center justify-between text-xs text-gray-500 mb-1">
           <div className="flex items-center gap-1">
             <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
-            <span className="font-medium">{shop.rating ? shop.rating.toFixed(1) : '0.0'}</span>
+            <span className="font-medium">{shop.average_rating ? parseFloat(shop.average_rating).toFixed(1) : '0.0'}</span>
           </div>
 
           {shop.product_count !== undefined && (

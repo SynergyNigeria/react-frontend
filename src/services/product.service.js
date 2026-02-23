@@ -64,15 +64,21 @@ export const productService = {
     return response.data;
   },
 
-  // Update product (seller)
-  updateProduct: async (productId, productData) => {
-    const response = await api.patch(ENDPOINTS.PRODUCT_DETAIL(productId), productData);
+  // Update product (seller) via store-scoped endpoint
+  updateProduct: async (productId, productData, storeId = null) => {
+    const endpoint = storeId
+      ? ENDPOINTS.STORE_PRODUCT_DETAIL(storeId, productId)
+      : ENDPOINTS.PRODUCT_DETAIL(productId);
+    const response = await api.patch(endpoint, productData);
     return response.data;
   },
 
   // Delete product (seller)
-  deleteProduct: async (productId) => {
-    const response = await api.delete(ENDPOINTS.PRODUCT_DETAIL(productId));
+  deleteProduct: async (productId, storeId = null) => {
+    const endpoint = storeId
+      ? ENDPOINTS.STORE_PRODUCT_DETAIL(storeId, productId)
+      : ENDPOINTS.PRODUCT_DETAIL(productId);
+    const response = await api.delete(endpoint);
     return response.data;
   },
 };

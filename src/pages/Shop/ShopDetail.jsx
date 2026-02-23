@@ -136,7 +136,7 @@ const ShopDetail = () => {
             <div className="flex items-center gap-2">
               <Star className="h-5 w-5 fill-yellow-400 text-yellow-400" />
               <span className="font-semibold text-gray-900">
-                {shop?.rating ? shop.rating.toFixed(1) : '0.0'}
+                {shop?.average_rating ? parseFloat(shop.average_rating).toFixed(1) : '0.0'}
               </span>
               {shop?.review_count !== undefined && (
                 <span className="text-gray-500 text-sm">({shop.review_count})</span>
