@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import covuLogo from '@assets/images/COVU MARKET.png';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { loginSchema } from '@utils/validators';
@@ -117,7 +118,7 @@ const Login = () => {
       <div className="max-w-md w-full p-8 relative z-10">
         {/* Logo */}
         <div className="flex justify-center mb-8 bg-white rounded-2xl py-4 px-6 shadow-md">
-          <img src="/src/assets/images/covu.png" alt="COVU Logo" className="h-16 w-auto" />
+          <img src={covuLogo} alt="COVU Logo" className="h-32 w-32 object-contain" />
         </div>
 
         <h2 className="text-2xl font-bold text-center text-white mb-6">Welcome Back</h2>

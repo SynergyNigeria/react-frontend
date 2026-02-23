@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { User } from 'lucide-react';
 import { useAuth } from '@hooks/useAuth';
+import covuLogo from '@assets/images/COVU MARKET.png';
 
 const Header = ({ showLogo = true }) => {
   const { user, isAuthenticated } = useAuth();
@@ -12,7 +13,7 @@ const Header = ({ showLogo = true }) => {
           {/* Logo */}
           {showLogo && (
             <Link to="/" className="flex items-center">
-              <img src="/src/assets/images/covu.png" alt="COVU Logo" className="h-8 w-auto" />
+              <img src={covuLogo} alt="COVU Logo" className="h-14 w-14 object-contain" />
             </Link>
           )}
 
