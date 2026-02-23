@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: covu-marketplace
+    runtime: static
+    buildCommand: npm install && npm run build
+    staticPublishPath: ./dist
+    pullRequestPreviewsEnabled: false
+    envVars:
+      - key: VITE_API_URL
+        value: https://covu.onrender.com/api
+      - key: VITE_APP_NAME
+        value: COVU Marketplace
+      - key: VITE_PAGE_SIZE
+        value: "20"
+      - key: VITE_SCROLL_THRESHOLD
+        value: "300"
+      - key: VITE_PAYSTACK_PUBLIC_KEY
+        sync: false  # Set this manually in Render dashboard (secret)
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
